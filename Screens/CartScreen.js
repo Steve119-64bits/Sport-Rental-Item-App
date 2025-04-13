@@ -4,6 +4,7 @@ import CheckBox from '@react-native-community/checkbox';
 
 export default function CartScreen({ onNavigate }) {
   const [cartItems, setCartItems] = useState([
+    //just for example, will change when got item db
     { id: 1, name: 'Wood Table', price: 99.99, quantity: 1, selected: false, image: 'https://via.placeholder.com/100' },
     { id: 2, name: 'Chair', price: 49.99, quantity: 2, selected: false, image: 'https://via.placeholder.com/100' }
   ]);
