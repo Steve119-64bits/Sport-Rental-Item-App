@@ -34,7 +34,7 @@ export default function UserProfileScreen({ onNavigate }) {
     ]);
   };
 
-  return (
+  return (//go to cart button just for me go to cart screen, will del ltr
     <View style={styles.container}>
       <Text style={styles.title}>User Profile</Text>
 
