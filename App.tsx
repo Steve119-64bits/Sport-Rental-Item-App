@@ -1,13 +1,27 @@
-import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import StackNavigator from './navigation';
+import React, { useState } from 'react';
+import UserProfileScreen from './screens/UserProfileScreen';
+import EditProfileScreen from './screens/EditProfileScreen';
+import CartScreen from './screens/CartScreen';
+import CheckoutScreen from './screens/CheckoutScreen';
+import PaymentHistoryScreen from './screens/PaymentHistoryScreen';
 
-const App = () => {
-  return (
-    <NavigationContainer>
-      <StackNavigator />
-    </NavigationContainer>
-  );
-};
+export default function App() {
+  const [currentScreen, setCurrentScreen] = useState('profile');
 
-export default App;
+  const renderScreen = () => {
+    switch (currentScreen) {
+      case 'edit':
+        return <EditProfileScreen onNavigate={setCurrentScreen} />;
+      case 'cart':
+        return <CartScreen onNavigate={setCurrentScreen} />;
+      case 'checkout':
+        return <CheckoutScreen onNavigate={setCurrentScreen} />;
+      case 'history':
+        return <PaymentHistoryScreen onNavigate={setCurrentScreen} />;
+      default:
+        return <UserProfileScreen onNavigate={setCurrentScreen} />;
+    }
+  };
+
+  return renderScreen();
+}
