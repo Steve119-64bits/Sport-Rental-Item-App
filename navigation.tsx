@@ -12,7 +12,7 @@ const StackNavigator = () => (
     <Stack.Screen name="Home" component={HomeScreen} />
     <Stack.Screen name="ItemList" component={ItemListScreen} />
     <Stack.Screen name="BookingItem" component={BookingItemScreen} />
-    <Stack.Screen name="Cart" component={CartScreen} />
+    {/* <Stack.Screen name="Cart" component={CartScreen} /> */}
   </Stack.Navigator>
 );
 
