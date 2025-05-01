@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Image, Animated, Modal, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import * as ImagePicker from 'react-native-image-picker';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const branches = ['Branch 1', 'Branch 2', 'Branch 3', 'Branch 4'];
 
@@ -31,6 +32,11 @@ const HeaderWithMenu = ({ navigation }) => {
     });
   };
 
+  const handleLogout = async () => {
+    await AsyncStorage.removeItem('userToken');
+    navigation.replace('Login');
+  };
+
   return (
     <>
       {/* Left Menu */}
@@ -56,6 +62,9 @@ const HeaderWithMenu = ({ navigation }) => {
           </TouchableOpacity>
           <TouchableOpacity onPress={() => navigation.navigate('Contact')}>
             <Text style={styles.menuItem}>Contact</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={handleLogout}>
+            <Text style={styles.menuItem}>Logout</Text>
           </TouchableOpacity>
         </View>
       )}

@@ -4,7 +4,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import HeaderWithMenu from '../components/HeaderWithMenu';
 
 const BookingItemScreen = ({ route, navigation }) => {
-  const { item } = route.params; // item object { id, name, image }
+  const { item, userName, selectedBranch } = route.params; // item object { id, name, image }
   
   // States for date, time, and duration
   const [date, setDate] = useState(new Date());
@@ -47,7 +47,16 @@ const BookingItemScreen = ({ route, navigation }) => {
   // Function to proceed to payment
   const proceedToPayment = () => {
     Alert.alert('Proceeding to Payment', `Total: RM${totalPrice}`);
-    navigation.navigate('Payment', { item, date, time, duration, totalPrice });
+    console.log('Navigating to PaymentScreen with:', { selectedBranch, userName });
+    navigation.navigate('Payment', {
+      item,
+      selectedBranch,
+      userName,
+      date: date.toISOString(),
+      time: time.toISOString(),
+      duration,
+      totalPrice,
+    });
   };
 
   return (

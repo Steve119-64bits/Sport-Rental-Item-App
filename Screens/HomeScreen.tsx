@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
+import { useEffect } from 'react';
 import { 
   View, Text, TextInput, TouchableOpacity, Image, StyleSheet, Animated, FlatList, Modal, Alert 
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import * as ImagePicker from 'react-native-image-picker';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useRoute } from '@react-navigation/native';
 
 const HomeScreen = ({ navigation }) => {
   const [menuVisible, setMenuVisible] = useState(false);
@@ -12,6 +15,15 @@ const HomeScreen = ({ navigation }) => {
   const [profilePic, setProfilePic] = useState(require('../assets/profile.png'));
   const [searchQuery, setSearchQuery] = useState('');
   const slideAnim = useState(new Animated.Value(0))[0];
+  const route = useRoute();
+  const [userName, setUserName] = useState('');
+  
+  useEffect(() => {
+    if (route.params?.userName) {
+      setUserName(route.params.userName);
+      console.log('User Name set:', route.params.userName); // Debug log
+    }
+  }, [route.params?.userName]);
 
   const toggleMenu = () => {
     Animated.timing(slideAnim, {
@@ -26,6 +38,7 @@ const HomeScreen = ({ navigation }) => {
 
   const handleBranchSelect = (branch) => {
     setSelectedBranch(branch);
+    console.log('Selected Branch:', branch);  // Logs the selected branch to the console
     setBranchMenuVisible(false);
   };
 
@@ -40,6 +53,19 @@ const HomeScreen = ({ navigation }) => {
       if (!response.didCancel && response.assets && response.assets.length > 0) {
         setProfilePic({ uri: response.assets[0].uri });
       }
+    });
+  };
+
+  const handleLogout = async () => {
+    await AsyncStorage.removeItem('userToken');
+    navigation.replace('Login');
+  };
+
+  const handleBookItem = (item) => {
+    navigation.navigate('ItemList', {
+      selectedCategory: item.name,
+      userName: userName,  // Passing userName
+      selectedBranch: selectedBranch,  // Passing selectedBranch
     });
   };
 
@@ -67,6 +93,9 @@ const HomeScreen = ({ navigation }) => {
           </TouchableOpacity>
           <TouchableOpacity onPress={() => navigation.navigate('Contact')}>
             <Text style={styles.menuItem}>Contact</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={handleLogout}>
+            <Text style={styles.menuItem}>Logout</Text>
           </TouchableOpacity>
         </View>
       )}
@@ -130,7 +159,8 @@ const HomeScreen = ({ navigation }) => {
               ]}
               onPress={() => {
                 if (selectedBranch) {
-                  navigation.navigate('ItemList', { selectedCategory: item.name });
+                  handleBookItem(item); // Use the handleBookItem function when an item is selected
+                  //navigation.navigate('ItemList', { selectedCategory: item.name });
                 } else {
                   Alert.alert('Select a Branch', 'Please select a branch before choosing a category.');
                 }

@@ -19,7 +19,7 @@ const itemsData = {
 };
 
 const ItemListScreen = ({ route, navigation }) => {
-  const { selectedCategory } = route.params;
+  const { selectedCategory, userName, selectedBranch } = route.params;
   const items = itemsData[selectedCategory] || [];
 
   return (
@@ -28,11 +28,22 @@ const ItemListScreen = ({ route, navigation }) => {
       <HeaderWithMenu navigation={navigation} />
 
       <Text style={styles.header}>{selectedCategory}</Text>
+
       <FlatList
         data={items}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-          <TouchableOpacity style={styles.item} onPress={() => navigation.navigate('BookingItem', { item })}>
+          <TouchableOpacity 
+            style={styles.item} 
+            onPress={() => 
+            navigation.navigate('BookingItem', 
+              {
+               item,
+               userName,
+               selectedBranch 
+              })
+            }
+          >
             <Image source={item.image} style={styles.image} />
             <Text style={styles.text}>{item.name}</Text>
           </TouchableOpacity>
@@ -47,7 +58,7 @@ const styles = StyleSheet.create({
   header: { fontSize: 24, fontWeight: 'bold', marginVertical: 15, textAlign: 'center' },
   item: { flexDirection: 'row', alignItems: 'center', marginVertical: 10, padding: 10, backgroundColor: '#f5f5f5', borderRadius: 10 },
   image: { width: 80, height: 80, marginRight: 15, resizeMode: 'contain' },
-  text: { fontSize: 18, fontWeight: 'bold' },
+  text: { fontSize: 18, fontWeight: 'bold' }, 
 });
 
 export default ItemListScreen;
