@@ -120,72 +120,72 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet, TextInput, Alert } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import HeaderWithMenu from '../components/HeaderWithMenu';
+import imageMap from '../imageMap';
 
 const BookingItemScreen = ({ route, navigation }) => {
-  const { item } = route.params; // item object { id, name, image }
-  
-  // States for date, time, and duration
+  const { item } = route.params;
+
   const [date, setDate] = useState(new Date());
   const [time, setTime] = useState(new Date());
-  const [duration, setDuration] = useState(1); // Default duration in hours
-  const [totalPrice, setTotalPrice] = useState(10); // Base price RM10 per hour
-
-  // State to control date & time picker visibility
+  const [duration, setDuration] = useState(1);
+  const [totalPrice, setTotalPrice] = useState(10);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
-  
-  const imageMap: { [key: string]: any } = {
-    wood_paddle: require('../assets/wood_paddle.png'),
-    graphite_paddle: require('../assets/graphite_paddle.png'),
-    composite_paddle: require('../assets/composite_paddle.png'),
-    outdoor_ball: require('../assets/outdoor_pickleball.png'),
-    indoor_ball: require('../assets/indoor_pickleball.png'),
-    nylon_net: require('../assets/nylon_net.png'),
-    polyethylene_net: require('../assets/polyethylene_net.png'),
-  };
-  // Function to handle date change
+
   const handleDateChange = (event, selectedDate) => {
     setShowDatePicker(false);
-    if (selectedDate) {
-      setDate(selectedDate);
-    }
+    if (selectedDate) setDate(selectedDate);
   };
 
-  // Function to handle time change
   const handleTimeChange = (event, selectedTime) => {
     setShowTimePicker(false);
-    if (selectedTime) {
-      setTime(selectedTime);
-    }
+    if (selectedTime) setTime(selectedTime);
   };
 
-  // Function to handle duration selection
   const handleDurationChange = (newDuration) => {
     setDuration(newDuration);
-    setTotalPrice(newDuration * 10); // Assuming RM10 per hour
+    setTotalPrice(newDuration * 10);
   };
 
-  // Function to add to cart
   const addToCart = () => {
     Alert.alert('Added to Cart', `${item.name} has been added to your cart.`);
     navigation.navigate('Cart', { item, date, time, duration, totalPrice });
   };
 
-  // Function to proceed to payment
-  const proceedToPayment = () => {
-    Alert.alert('Proceeding to Payment', `Total: RM${totalPrice}`);
-    navigation.navigate('Payment', { item, date, time, duration, totalPrice });
+  const proceedToPayment = async () => {
+    try {
+      const response = await fetch('http://10.0.2.2:5000/book', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          item,
+          date: date.toISOString(),
+          time: time.toISOString(),
+          duration,
+          totalPrice,
+        }),
+      });
+
+      const result = await response.json();
+      if (response.ok) {
+        Alert.alert('✅ Booking Confirmed', result.message);
+        navigation.navigate('Payment', { item, date, time, duration, totalPrice });
+      } else {
+        throw new Error(result.message || 'Failed to confirm booking');
+      }
+    } catch (error) {
+      Alert.alert('❌ Error', error.message);
+      console.error('Booking error:', error);
+    }
   };
 
   return (
     <View style={styles.container}>
       <HeaderWithMenu navigation={navigation} />
 
-      {/* Item Image & Name */}
       <Image source={imageMap[item.image] || require('../assets/default.png')} style={styles.image} />
       <Text style={styles.title}>{item.name}</Text>
 
-      {/* Start Date Picker */}
       <TouchableOpacity style={styles.input} onPress={() => setShowDatePicker(true)}>
         <Text>Start Date: {date.toDateString()}</Text>
       </TouchableOpacity>
@@ -193,7 +193,6 @@ const BookingItemScreen = ({ route, navigation }) => {
         <DateTimePicker value={date} mode="date" display="default" onChange={handleDateChange} />
       )}
 
-      {/* Start Time Picker */}
       <TouchableOpacity style={styles.input} onPress={() => setShowTimePicker(true)}>
         <Text>Start Time: {time.toLocaleTimeString()}</Text>
       </TouchableOpacity>
@@ -201,7 +200,6 @@ const BookingItemScreen = ({ route, navigation }) => {
         <DateTimePicker value={time} mode="time" display="default" onChange={handleTimeChange} />
       )}
 
-      {/* Duration Selection */}
       <Text style={styles.label}>Duration (hours):</Text>
       <TextInput
         style={styles.input}
@@ -210,15 +208,12 @@ const BookingItemScreen = ({ route, navigation }) => {
         onChangeText={(text) => handleDurationChange(parseInt(text) || 1)}
       />
 
-      {/* Total Price Display */}
       <Text style={styles.totalPrice}>Total: RM{totalPrice}</Text>
 
-      {/* Add to Cart Button */}
       <TouchableOpacity style={styles.cartButton} onPress={addToCart}>
         <Text style={styles.cartText}>Add to Cart</Text>
       </TouchableOpacity>
 
-      {/* Proceed to Payment Button */}
       <TouchableOpacity style={styles.payButton} onPress={proceedToPayment}>
         <Text style={styles.payText}>Proceed to Payment</Text>
       </TouchableOpacity>
@@ -236,8 +231,8 @@ const styles = StyleSheet.create({
   cartButton: { backgroundColor: '#007bff', padding: 10, borderRadius: 5, marginTop: 15, width: '80%', alignItems: 'center' },
   cartText: { color: '#fff', fontSize: 18 },
   payButton: { backgroundColor: '#28a745', padding: 10, borderRadius: 5, marginTop: 10, width: '80%', alignItems: 'center' },
-  payText: { color: '#fff', fontSize: 18 }
+  payText: { color: '#fff', fontSize: 18 },
 });
-*/
 
 export default BookingItemScreen;
+*/
