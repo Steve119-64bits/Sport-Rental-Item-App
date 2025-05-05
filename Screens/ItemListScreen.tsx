@@ -57,7 +57,7 @@ export default ItemListScreen;
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, Image, StyleSheet, ActivityIndicator } from 'react-native';
 import HeaderWithMenu from '../components/HeaderWithMenu';
-import { getItemsByCategory } from '../services/db-service'; 
+import imageMap from '../imageMap';
 
 interface Item {
   id: number;
@@ -65,17 +65,6 @@ interface Item {
   image: string;
   category: string;
 }
-
-// Mapping image names to require() assets
-const imageMap: { [key: string]: any } = {
-  wood_paddle: require('../assets/wood_paddle.png'),
-  graphite_paddle: require('../assets/graphite_paddle.png'),
-  composite_paddle: require('../assets/composite_paddle.png'),
-  outdoor_ball: require('../assets/outdoor_pickleball.png'),
-  indoor_ball: require('../assets/indoor_pickleball.png'),
-  nylon_net: require('../assets/nylon_net.png'),
-  polyethylene_net: require('../assets/polyethylene_net.png'),
-};
 
 const ItemListScreen = ({ route, navigation }: any) => {
   const { selectedCategory } = route.params;
@@ -86,7 +75,9 @@ const ItemListScreen = ({ route, navigation }: any) => {
   useEffect(() => {
     const loadItems = async () => {
       try {
-        const fetchedItems = await getItemsByCategory(selectedCategory); 
+        const response = await fetch(`http://10.0.2.2:5000/items?category=${selectedCategory}`);
+        if (!response.ok) throw new Error('Server returned an error');
+        const fetchedItems = await response.json();
         console.log('Selected category:', selectedCategory);
         console.log('Fetched Items:', fetchedItems);
         setItems(fetchedItems);
@@ -107,7 +98,7 @@ const ItemListScreen = ({ route, navigation }: any) => {
       onPress={() => navigation.navigate('BookingItem', { item })}
     >
       <Image
-        source={imageMap[item.image] || require('../assets/default.png')} // Optional: fallback image
+        source={imageMap[item.image] || require('../assets/default.png')}
         style={styles.image}
       />
       <Text style={styles.text}>{item.name}</Text>
@@ -166,4 +157,5 @@ const styles = StyleSheet.create({
 });
 
 export default ItemListScreen;
+
 */
