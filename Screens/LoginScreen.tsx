@@ -28,7 +28,10 @@ const LoginScreen = () => {
       if (response.ok) {
         // If login successful, save user info and navigate
         await AsyncStorage.setItem('userName', data.user.f_name); // Store user's first name for example
-        navigation.replace('Home', { userName: data.user.f_name });
+        navigation.replace('Main', {
+          screen: 'Home',
+          params: { userName: data.user.f_name }
+        });
       } else {
         // If login fails, show error
         alert(data.error || 'Something went wrong');

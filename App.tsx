@@ -1,10 +1,12 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {Text, View} from 'react-native';
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import HomeScreen from './Screens/HomeScreen';
+import LoginScreen from './Screens/LoginScreen';
+import SignUpScreen from './Screens/SignUpScreen';
 import AboutUsScreen from './Screens/AboutUsScreen';
 import FeedBackScreen from './Screens/FeedBackScreen';
 import ItemListScreen from './Screens/ItemListScreen';
@@ -13,31 +15,17 @@ import 'react-native-gesture-handler';
 
 const Stack = createStackNavigator();
 
-const App = () => {
-  return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="Main">
-        <Stack.Screen
-          name="Main"
-          options={{
-            headerShown: false,
-          }}
-          component={BottomTabs}
-        />
-        <Stack.Screen
-          name="ItemList"
-          component={ItemListScreen}
-          options={{ headerShown: true }}
-        />
-        <Stack.Screen
-          name="BookingItem"
-          component={BookingItemScreen}
-          options={{ headerShown: true }}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
-  );
-};
+const App = () => (
+  <NavigationContainer>
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="Login" component={LoginScreen} />
+      <Stack.Screen name="SignUp" component={SignUpScreen} />
+      <Stack.Screen name="Main" component={BottomTabs} />
+      <Stack.Screen name="ItemList" component={ItemListScreen} />
+      <Stack.Screen name="BookingItem" component={BookingItemScreen} />
+    </Stack.Navigator>
+  </NavigationContainer>
+);
 
 const Tab = createBottomTabNavigator();
 
