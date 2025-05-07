@@ -67,7 +67,11 @@ interface Item {
 }
 
 const ItemListScreen = ({ route, navigation }: any) => {
-  const { selectedCategory } = route.params;
+  const { 
+    selectedCategory,
+    userName, // Assuming userName is passed in route params
+    selectedBranch // Assuming selectedBranch is passed in route params
+   } = route.params;
   const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -95,7 +99,13 @@ const ItemListScreen = ({ route, navigation }: any) => {
   const renderItem = ({ item }: { item: Item }) => (
     <TouchableOpacity
       style={styles.item}
-      onPress={() => navigation.navigate('BookingItem', { item })}
+      onPress={() => navigation.navigate('BookingItem', 
+        { 
+          item,
+          userName, // Assuming userName is passed in route params
+          selectedBranch // Assuming selectedBranch is passed in route params
+       })
+      }
     >
       <Image
         source={imageMap[item.image] || require('../assets/default.webp')}

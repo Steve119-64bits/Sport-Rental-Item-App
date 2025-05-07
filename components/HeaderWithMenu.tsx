@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Image, Animated, Modal, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import * as ImagePicker from 'react-native-image-picker';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useEffect } from 'react';
 
 const branches = ['Branch 1', 'Branch 2', 'Branch 3', 'Branch 4'];
 
@@ -11,7 +13,19 @@ const HeaderWithMenu = ({ navigation }) => {
   const [selectedBranch, setSelectedBranch] = useState('Select Branch');
   const [profilePic, setProfilePic] = useState(require('../assets/profile.png'));
   const [searchQuery, setSearchQuery] = useState('');
+  const [username, setUsername] = useState('');
   const slideAnim = useState(new Animated.Value(0))[0];
+
+  // Load username from AsyncStorage when component mounts
+  useEffect(() => {
+    const loadUsername = async () => {
+      const storedName = await AsyncStorage.getItem('userName');
+      if (storedName) {
+        setUsername(storedName);
+      }
+    };
+    loadUsername();
+  }, []);
 
   const toggleMenu = () => {
     Animated.timing(slideAnim, {
@@ -31,6 +45,12 @@ const HeaderWithMenu = ({ navigation }) => {
     });
   };
 
+  // handle logout
+  const handleLogout = async () => {
+    await AsyncStorage.removeItem('userToken');
+    navigation.replace('Login');
+  };
+
   return (
     <>
       {/* Left Menu */}
@@ -40,7 +60,7 @@ const HeaderWithMenu = ({ navigation }) => {
             <TouchableOpacity onPress={pickImage}>
               <Image source={profilePic} style={styles.profilePic} />
             </TouchableOpacity>
-            <Text style={styles.profileName}>Yun Sheng</Text>
+            <Text style={styles.profileName}>{username || 'Guest'}</Text>
           </View>
           <TouchableOpacity onPress={toggleMenu} style={styles.closeButton}>
             <Icon name="bars" size={24} color="black" />
@@ -56,6 +76,11 @@ const HeaderWithMenu = ({ navigation }) => {
           </TouchableOpacity>
           <TouchableOpacity onPress={() => navigation.navigate('Contact')}>
             <Text style={styles.menuItem}>Contact</Text>
+          </TouchableOpacity>
+
+          {/* Logout Button */}
+          <TouchableOpacity onPress={handleLogout}>
+            <Text style={styles.menuItem}>Logout</Text>
           </TouchableOpacity>
         </View>
       )}

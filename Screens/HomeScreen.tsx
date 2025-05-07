@@ -4,6 +4,10 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import * as ImagePicker from 'react-native-image-picker';
+import { useRoute } from '@react-navigation/native';
+import { useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 const HomeScreen = ({ navigation }) => {
   const [menuVisible, setMenuVisible] = useState(false);
@@ -12,6 +16,18 @@ const HomeScreen = ({ navigation }) => {
   const [profilePic, setProfilePic] = useState(require('../assets/profile.png'));
   const [searchQuery, setSearchQuery] = useState('');
   const slideAnim = useState(new Animated.Value(0))[0];
+
+  // Debugging: Log the userName when it is set
+  const route = useRoute();
+  const [userName, setUserName] = useState('');
+
+  // Debugging: Log the userName when it is set
+  useEffect(() => {
+    if (route.params?.userName) {
+      setUserName(route.params.userName);
+      console.log('User Name set:', route.params.userName); // Debug log
+    }
+  }, [route.params?.userName]);
 
   const toggleMenu = () => {
     Animated.timing(slideAnim, {
@@ -26,6 +42,7 @@ const HomeScreen = ({ navigation }) => {
 
   const handleBranchSelect = (branch) => {
     setSelectedBranch(branch);
+    console.log('Selected Branch:', branch);  // for debugging purposes
     setBranchMenuVisible(false);
   };
 
@@ -43,6 +60,29 @@ const HomeScreen = ({ navigation }) => {
     });
   };
 
+  // Logout function to clear user token and navigate to Login screen
+  const handleLogout = async () => {
+    try {
+      // Clear the user session or data from AsyncStorage
+      await AsyncStorage.removeItem('userName');  // Remove any session-related data
+
+      // Navigate the user back to the login screen
+      navigation.replace('Login');
+    } catch (error) {
+      console.error('Error during logout', error);
+      alert('Something went wrong during logout.');
+    }
+  };
+
+  // Function to handle item selection and navigate to ItemList screen
+  const handleBookItem = (item) => {
+    navigation.navigate('ItemList', {
+      selectedCategory: item.name,
+      userName: userName,  // Passing userName
+      selectedBranch: selectedBranch,  // Passing selectedBranch
+    });
+  };
+
   return (
     <View style={styles.container}>
       {/* Left Menu */}
@@ -52,6 +92,7 @@ const HomeScreen = ({ navigation }) => {
             <TouchableOpacity onPress={pickImage}>
               <Image source={profilePic} style={styles.profilePic} />
             </TouchableOpacity>
+            <Text style={styles.userName}>{userName}</Text> 
           </View>
           <TouchableOpacity onPress={toggleMenu} style={styles.closeButton}>
             <Icon name="bars" size={24} color="black" />
@@ -67,6 +108,11 @@ const HomeScreen = ({ navigation }) => {
           </TouchableOpacity>
           <TouchableOpacity onPress={() => navigation.navigate('Contact')}>
             <Text style={styles.menuItem}>Contact</Text>
+          </TouchableOpacity>
+
+          {/* Logout Button */}
+          <TouchableOpacity onPress={handleLogout}>
+            <Text style={styles.menuItem}>Logout</Text>
           </TouchableOpacity>
         </View>
       )}
@@ -130,7 +176,8 @@ const HomeScreen = ({ navigation }) => {
               ]}
               onPress={() => {
                 if (selectedBranch) {
-                  navigation.navigate('ItemList', { selectedCategory: item.name });
+                  handleBookItem(item); // Use the handleBookItem function when an item is selected
+                  //navigation.navigate('ItemList', { selectedCategory: item.name });
                 } else {
                   Alert.alert('Select a Branch', 'Please select a branch before choosing a category.');
                 }
@@ -169,6 +216,7 @@ const styles = StyleSheet.create({
   branchOption: { padding: 15, width: '100%', alignItems: 'center', borderBottomWidth: 1, borderBottomColor: '#ccc' },
   closeModal: { marginTop: 10, padding: 10, backgroundColor: 'red', borderRadius: 5, width: '100%', alignItems: 'center' },
   closeText: { color: '#fff', fontSize: 16 },
+  userName: { marginTop: 10, fontSize: 16, fontWeight: 'bold', textAlign: 'center',},
 });
 
 export default HomeScreen;

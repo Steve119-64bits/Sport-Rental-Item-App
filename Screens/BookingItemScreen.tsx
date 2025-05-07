@@ -122,7 +122,11 @@ import HeaderWithMenu from '../components/HeaderWithMenu';
 import imageMap from '../imageMap';
 
 const BookingItemScreen = ({ route, navigation }) => {
-  const { item } = route.params;
+  const { 
+    item,
+    userName,   // User's name passed from the previous screen
+    selectedBranch  // Selected branch passed from the previous screen
+   } = route.params;
 
   const [date, setDate] = useState(new Date());
   const [time, setTime] = useState(new Date());
@@ -158,6 +162,8 @@ const BookingItemScreen = ({ route, navigation }) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           item,
+          selectedBranch, // Pass selected branch to Payment screen
+          userName, // Pass user name to Payment screen
           date: date.toISOString(),
           time: time.toISOString(),
           duration,
@@ -168,7 +174,14 @@ const BookingItemScreen = ({ route, navigation }) => {
       const result = await response.json();
       if (response.ok) {
         Alert.alert('✅ Booking Confirmed', result.message);
-        navigation.navigate('Payment', { item, date, time, duration, totalPrice });
+        navigation.navigate('Payment', { 
+          item,
+          selectedBranch, // Pass selected branch to Payment screen
+          userName, // Pass user name to Payment screen
+          date: date.toISOString(),     // serialized
+          time: time.toISOString(),     // serialized
+          duration, 
+          totalPrice });
       } else {
         throw new Error(result.message || 'Failed to confirm booking');
       }
