@@ -8,7 +8,6 @@ import { useRoute } from '@react-navigation/native';
 import { useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-
 const HomeScreen = ({ navigation }) => {
   const [menuVisible, setMenuVisible] = useState(false);
   const [branchMenuVisible, setBranchMenuVisible] = useState(false);

@@ -6,6 +6,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import HomeScreen from './Screens/HomeScreen';
 import LoginScreen from './Screens/LoginScreen';
+import CartScreen from './Screens/CartScreen';
 import SignUpScreen from './Screens/SignUpScreen';
 import AboutUsScreen from './Screens/AboutUsScreen';
 import FeedBackScreen from './Screens/FeedBackScreen';
