@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 import sqlite3
 from flask_cors import CORS
+from werkzeug.security import generate_password_hash, check_password_hash   # For password hashing
 
 app = Flask(__name__)
 CORS(app)  # Allows requests from React Native
@@ -11,6 +12,11 @@ def query_db(query, args=(), one=False):
     conn = sqlite3.connect(DB_PATH)
     cur = conn.cursor()
     cur.execute(query, args)
+    # for data-changing queries, commit the changes
+    if query.strip().upper().startswith("INSERT") or \
+       query.strip().upper().startswith("UPDATE") or \
+       query.strip().upper().startswith("DELETE"):
+        conn.commit()  # commit if data-changing query
     rv = cur.fetchall()
     conn.close()
     return (rv[0] if rv else None) if one else rv
@@ -29,7 +35,58 @@ def get_items_by_category():
 def book_item():
     data = request.json
     print("✅ Received booking:", data)
-    return jsonify({"status": "success", "message": "Booking received successfully."})
+    return jsonify({"status": "success", "message": "Please continue to the payment step to finalize your booking."})
+
+@app.route('/signup', methods=['POST'])
+def signup():
+    data = request.json
+    f_name = data.get('f_name')
+    l_name = data.get('l_name')
+    email = data.get('email').strip().lower()
+    password = data.get('password')
+    phone_no = data.get('phone_no')
+    branch_id = data.get('branch_id')  # optional
+
+    if not all([f_name, l_name, email, password, phone_no]):
+        return jsonify({'error': 'Missing required fields'}), 400
+
+    hashed_password = generate_password_hash(password)
+
+    try:
+        query_db(
+            "INSERT INTO users (f_name, l_name, email, password, phone_no, branch_id) VALUES (?, ?, ?, ?, ?, ?)",
+            (f_name, l_name, email, hashed_password, phone_no, branch_id)
+        )
+        return jsonify({'message': 'User registered successfully'}), 201
+    except sqlite3.IntegrityError:
+        return jsonify({'error': 'Email already exists'}), 409
+
+@app.route('/login', methods=['POST'])
+def login():
+    data = request.json
+    email = data.get('email')
+    password = data.get('password')
+
+    if not email or not password:
+        return jsonify({'error': 'Email and password required'}), 400
+
+    row = query_db("SELECT id, f_name, l_name, password FROM users WHERE email = ?", [email], one=True)
+    
+    print("User found:", row)  # <<< Debug print here
+
+    if row:
+        user_id, f_name, l_name, hashed_password = row
+        if check_password_hash(hashed_password, password):
+            return jsonify({'message': 'Login successful', 'user': {
+                'id': user_id,
+                'f_name': f_name,
+                'l_name': l_name,
+                'email': email
+            }})
+        else:
+            return jsonify({'error': 'Invalid password'}), 401
+    else:
+        return jsonify({'error': 'User not found'}), 404
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
