@@ -88,5 +88,63 @@ def login():
     else:
         return jsonify({'error': 'User not found'}), 404
 
+@app.route('/api/user/<int:user_id>', methods=['GET'])
+def get_user(user_id):
+    row = query_db("SELECT f_name, l_name, email, phone_no FROM users WHERE id = ?", [user_id], one=True)
+    if row:
+        return jsonify({
+            'firstName': row[0],
+            'lastName': row[1],
+            'email': row[2],
+            'phone': row[3]
+        })
+    return jsonify({'error': 'User not found'}), 404
+
+@app.route('/api/user/<int:user_id>', methods=['PUT'])
+def update_user(user_id):
+    data = request.json
+    query_db("""
+        UPDATE users
+        SET f_name = ?, l_name = ?, email = ?, phone_no = ?
+        WHERE id = ?
+    """, [data.get('firstName'), data.get('lastName'), data.get('email'), data.get('phone'), user_id])
+    return jsonify({'message': 'User updated successfully'})
+
+@app.route('/api/cart/<int:user_id>', methods=['GET'])
+def get_cart(user_id):
+    rows = query_db("SELECT id, name, price, quantity, selected, image FROM cart_items WHERE user_id = ?", [user_id])
+    items = [
+        {
+            'id': r[0],
+            'name': r[1],
+            'price': r[2],
+            'quantity': r[3],
+            'selected': bool(r[4]),
+            'image': r[5]
+        } for r in rows
+    ]
+    return jsonify(items)
+
+@app.route('/api/cart/<int:user_id>', methods=['PUT'])
+def update_cart(user_id):
+    items = request.get_json()
+    
+    query_db("DELETE FROM cart_items WHERE user_id = ?", [user_id])
+  
+    for item in items:
+        query_db('''
+            INSERT INTO cart_items (user_id, name, price, quantity, selected, image)
+            VALUES (?, ?, ?, ?, ?, ?)
+        ''', [
+            user_id,
+            item.get('name'),
+            item.get('price'),
+            item.get('quantity'),
+            int(item.get('selected', False)),
+            item.get('image')
+        ])
+    return jsonify({'message': 'Cart updated successfully'})
+
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
