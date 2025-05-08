@@ -99,6 +99,9 @@ const HomeScreen = ({ navigation }) => {
           <TouchableOpacity onPress={() => navigation.navigate('Home')}>
             <Text style={styles.menuItem}>Home</Text>
           </TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate('UserProfile')}>
+            <Text style={styles.menuItem}>Profile</Text>
+          </TouchableOpacity>
           <TouchableOpacity onPress={() => navigation.navigate('Cart')}>
             <Text style={styles.menuItem}>Cart</Text>
           </TouchableOpacity>

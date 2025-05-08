@@ -6,12 +6,33 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export default function UserProfileScreen({ navigation }) {
   const [user, setUser] = useState(null);
 
-  useEffect(() => {
-    fetch('http://10.0.2.2:5000/api/user/1')
-      .then(res => res.json())
-      .then(data => setUser(data))
-      .catch(err => console.error('Failed to load user:', err));
-  }, []);
+ 
+    const loadUser = async () => {
+      try {
+        const userId = await AsyncStorage.getItem('userId');
+        if (userId) {
+          const res = await fetch(`http://10.0.2.2:5000/api/user/${userId}`);
+          const data = await res.json();
+          setUser(data);
+        } else {
+          console.error('No user ID found in storage');
+        }
+      } catch (err) {
+        console.error('Failed to load user:', err);
+      }
+    };
+  
+    useEffect(() => {
+      loadUser();
+  
+      // Listen for when the screen comes into focus
+      const focusListener = navigation.addListener('focus', () => {
+        loadUser(); // Reload user data when screen becomes active
+      });
+  
+      // Clean up the listener when the component unmounts
+      return focusListener;
+    }, [navigation]);
 
   if (!user) return <Text>Loading...</Text>;
 
