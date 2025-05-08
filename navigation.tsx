@@ -10,6 +10,8 @@ import PaymentScreen from './Screens/PaymentScreen';
 import CreditCardPaymentScreen from './Screens/CreditCardPaymentScreen';
 import EWalletPaymentScreen from './Screens/EWalletPaymentScreen';
 import OnlineBankingPaymentScreen from './Screens/OnlineBankingPaymentScreen';
+import AboutUsScreen from './Screens/AboutUsScreen';
+import FeedbackScreen from './Screens/FeedbackScreen';
 
 const Stack = createStackNavigator();
 
@@ -20,6 +22,8 @@ const StackNavigator = () => (
     <Stack.Screen name="Home" component={HomeScreen} />
     <Stack.Screen name="ItemList" component={ItemListScreen} />
     <Stack.Screen name="BookingItem" component={BookingItemScreen} />
+    <Stack.Screen name="About" component={AboutUsScreen} />
+    <Stack.Screen name="Feedback" component={FeedbackScreen} />
     <Stack.Screen name="Cart" component={CartScreen} /> */
     <Stack.Screen name="Payment" component={PaymentScreen} />
     <Stack.Screen name="CreditCardPayment" component={CreditCardPaymentScreen} />

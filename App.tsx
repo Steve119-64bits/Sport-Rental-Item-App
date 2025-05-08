@@ -31,8 +31,9 @@ const App = () => (
       <Stack.Screen name="UserProfile" component={UserProfileScreen} />
       <Stack.Screen name="EditProfile" component={EditProfileScreen} />
       <Stack.Screen name="Cart" component={CartScreen} />
+      <Stack.Screen name="About" component={AboutUsScreen} />
+      <Stack.Screen name="Feedback" component={FeedBackScreen} />
       <Stack.Screen name="Payment" component={PaymentScreen} />
-
     </Stack.Navigator>
   </NavigationContainer>
 );
