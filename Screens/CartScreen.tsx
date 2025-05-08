@@ -5,19 +5,34 @@ import {
 } from 'react-native';
 import CheckBox from '@react-native-community/checkbox';
 import imageMap from '../imageMap';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function CartScreen ( {navigation}:any ) {
   const [items, setItems] = useState<any[]>([]);
   const [selectAll, setSelectAll] = useState(false);
-  const USER_ID = 1;
-  const API_URL = `http://10.0.2.2:5000/api/cart/${USER_ID}`;
+  const [userId, setUserId] = useState<number | null>(null);
 
   useEffect(() => {
-    fetch(API_URL)
-      .then(res => res.json())
-      .then(data => setItems(data))
-      .catch(err => console.error("Failed to load cart:", err));
+    AsyncStorage.getItem('USER_ID')
+      .then(userId => {
+        if (userId) {
+          setUserId(parseInt(userId));
+        } else {
+          console.error('User ID not found');
+        }
+      })
+      .catch(err => console.error('Error fetching user ID:', err));
   }, []);
+
+  useEffect(() => {
+    if (userId !== null) {
+      const API_URL = `http://10.0.2.2:5000/api/cart/${userId}`;
+      fetch(API_URL)
+        .then(res => res.json())
+        .then(data => setItems(data))
+        .catch(err => console.error("Failed to load cart:", err));
+    }
+  }, [userId]);
 
   const toggleItem = (id: number) => {
     const updated = items.map(item =>

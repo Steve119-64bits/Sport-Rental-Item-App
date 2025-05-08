@@ -8,11 +8,13 @@ const BookingItemScreen = ({ route, navigation }) => {
   const { 
     item,
     userName,   // User's name passed from the previous screen
-    selectedBranch  // Selected branch passed from the previous screen
+    selectedBranch,  // Selected branch passed from the previous screen
+    userId, // User ID passed from the previous screen
    } = route.params;
 
   const [date, setDate] = useState(new Date());
   const [time, setTime] = useState(new Date());
+  const [durationText, setDurationText] = useState("1");
   const [duration, setDuration] = useState(1);
   const [totalPrice, setTotalPrice] = useState(10);
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -28,19 +30,40 @@ const BookingItemScreen = ({ route, navigation }) => {
     if (selectedTime) setTime(selectedTime);
   };
 
-  const handleDurationChange = (newDuration) => {
-    setDuration(newDuration);
-    setTotalPrice(newDuration * 10);
+  const handleDurationChange = (text) => {
+    setDurationText(text);
+  
+    const parsed = parseInt(text);
+    if (!isNaN(parsed)) {
+      setDuration(parsed);
+      setTotalPrice(parsed * 10);
+    }
   };
+  
 
   const addToCart = async () => {
-    const USER_ID = 1;
-    const API_URL = `http://10.0.2.2:5000/api/cart/${USER_ID}`;
-  
+    const API_URL = `http://10.0.2.2:5000/api/cart/${userId}`; // Ensure this URL is correct and the server is running
+
     try {
+      console.log('Making GET request to:', API_URL);
       const res = await fetch(API_URL);
+
+      // Log the response
+      console.log('GET Response Status:', res.status);
+      console.log('GET Response Headers:', res.headers);
+      
+
+
+      const contentType = res.headers.get('content-type');
+      if (!res.ok || !contentType || !contentType.includes('application/json')) {
+        const text = await res.text();
+        console.error('Unexpected response:', text);
+        Alert.alert('Error', 'Received unexpected response from the server.');
+        return;
+      }
+
       const currentItems = await res.json();
-  
+
       const newItem = {
         name: item.name,
         price: totalPrice,
@@ -48,22 +71,34 @@ const BookingItemScreen = ({ route, navigation }) => {
         selected: true,
         image: item.image,
       };
-  
+
       const updatedItems = [...currentItems, newItem];
-  
-      await fetch(API_URL, {
+      console.log('Updated items:', updatedItems);
+
+      console.log('Making PUT request to:', API_URL);
+      const putRes = await fetch(API_URL, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatedItems),
       });
-  
+
+      console.log('PUT Response Status:', putRes.status);
+      if (!putRes.ok) {
+        const errorText = await putRes.text();
+        console.error('PUT request failed:', errorText);
+        Alert.alert('Error', 'Failed to update cart.');
+        return;
+      }
+
       Alert.alert('✅ Added to Cart', `${item.name} has been added.`);
       navigation.navigate('Cart');
     } catch (error) {
       console.error('Cart update error:', error);
-      Alert.alert('Failed to add to cart', error.message);
+      const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+      Alert.alert('Failed to add to cart', errorMessage);
     }
-  };
+};
+
   
 
   const proceedToPayment = async () => {
@@ -127,10 +162,9 @@ const BookingItemScreen = ({ route, navigation }) => {
       <TextInput
         style={styles.input}
         keyboardType="numeric"
-        value={duration.toString()}
-        onChangeText={(text) => handleDurationChange(parseInt(text) || 1)}
+        value={durationText}
+        onChangeText={handleDurationChange}
       />
-
       <Text style={styles.totalPrice}>Total: RM{totalPrice}</Text>
 
       <TouchableOpacity style={styles.cartButton} onPress={addToCart}>
