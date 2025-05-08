@@ -45,7 +45,7 @@ const LoginScreen = () => {
   return (
     <View style={styles.container}>
       {/* Logo Image */}
-      <Image source={require('../assets/logo.png')} style={styles.logo} />
+      <Image source={require('../assets/companyLogo.png')} style={styles.logo} />
 
       <TextInput
         placeholder="Email"
@@ -107,10 +107,10 @@ const styles = StyleSheet.create({
     textAlign: 'center' 
   },
   logo: {
-    width: 200, // Adjusted size to make the logo smaller
-    height: 150, // Adjusted size to make the logo smaller
+    width: 300, // Adjusted size to make the logo smaller
+    height: 250, // Adjusted size to make the logo smaller
     marginBottom: 30, // Space between logo and email input
-    borderWidth: 1, // Add border to the logo
+    borderWidth: 0, // Add border to the logo
     borderColor: 'gray', // Set border color
   },
 });
