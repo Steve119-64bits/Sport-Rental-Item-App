@@ -112,53 +112,52 @@ def update_user(user_id):
 
 @app.route('/api/cart/<int:user_id>', methods=['GET'])
 def get_cart(user_id):
-    try:
-        rows = query_db("SELECT id, name, price, quantity, selected, image FROM cart_items WHERE user_id = ?", [user_id])
-        items = [
-            {
-                'id': r[0],
-                'name': r[1],
-                'price': r[2],
-                'quantity': r[3],
-                'selected': bool(r[4]),
-                'image': r[5]
-            } for r in rows
-        ]
-        return jsonify(items)
-    except Exception as e:
-        return jsonify({'error': f'Error fetching cart: {str(e)}'}), 500
+    # Check if the user exists before retrieving the cart
+    row = query_db("SELECT id FROM users WHERE id = ?", [user_id], one=True)
+    if not row:
+        print(f"User with ID {user_id} not found.")  # Debugging output
+        return jsonify({'error': 'User not found'}), 404  # Return if user does not exist
+
+    rows = query_db("SELECT id, name, price, quantity, selected, image FROM cart_items WHERE user_id = ?", [user_id])
+    items = [
+        {
+            'id': r[0],
+            'name': r[1],
+            'price': r[2],
+            'quantity': r[3],
+            'selected': bool(r[4]),
+            'image': r[5]
+        } for r in rows
+    ]
+    return jsonify(items)
+
 
 @app.route('/api/cart/<int:user_id>', methods=['PUT'])
 def update_cart(user_id):
-    try:
-        items = request.get_json(force=True)
-        print(f"Updating cart for user {user_id}: {items}")  # Debug log
+    # Check if user exists before updating cart
+    row = query_db("SELECT id FROM users WHERE id = ?", [user_id], one=True)
+    if not row:
+        return jsonify({'error': 'User not found'}), 404
 
-        if not isinstance(items, list):
-            return jsonify({'error': 'Invalid payload format. Expected a list.'}), 400
+    items = request.get_json()
 
-        # Delete existing cart items for the user
-        query_db("DELETE FROM cart_items WHERE user_id = ?", [user_id], commit=True)
+    # Clear existing cart for this user and insert new items
+    query_db("DELETE FROM cart_items WHERE user_id = ?", [user_id])
 
-        for item in items:
-            # Insert each item back into the cart
-            query_db('''
-                INSERT INTO cart_items (user_id, name, price, quantity, selected, image)
-                VALUES (?, ?, ?, ?, ?, ?)
-            ''', [
-                user_id,
-                item.get('name'),
-                item.get('price'),
-                item.get('quantity'),
-                bool(item.get('selected', False)),  # Keep the boolean type for selected
-                item.get('image')
-            ], commit=True)
+    for item in items:
+        query_db('''
+            INSERT INTO cart_items (user_id, name, price, quantity, selected, image)
+            VALUES (?, ?, ?, ?, ?, ?)
+        ''', [
+            user_id,
+            item.get('name'),
+            item.get('price'),
+            item.get('quantity'),
+            int(item.get('selected', False)),
+            item.get('image')
+        ])
 
-        return jsonify({'message': 'Cart updated successfully'})
-    except Exception as e:
-        print(f"Error updating cart: {str(e)}")  # Debug log
-        return jsonify({'error': f'Error updating cart: {str(e)}'}), 500
-
+    return jsonify({'message': 'Cart updated successfully'})
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
