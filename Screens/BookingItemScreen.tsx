@@ -150,10 +150,38 @@ const BookingItemScreen = ({ route, navigation }) => {
     setTotalPrice(newDuration * 10);
   };
 
-  const addToCart = () => {
-    Alert.alert('Added to Cart', `${item.name} has been added to your cart.`);
-    navigation.navigate('Cart', { item, date, time, duration, totalPrice });
+  const addToCart = async () => {
+    const USER_ID = 1;
+    const API_URL = `http://10.0.2.2:5000/api/cart/${USER_ID}`;
+  
+    try {
+      const res = await fetch(API_URL);
+      const currentItems = await res.json();
+  
+      const newItem = {
+        name: item.name,
+        price: totalPrice,
+        quantity: duration,
+        selected: true,
+        image: item.image,
+      };
+  
+      const updatedItems = [...currentItems, newItem];
+  
+      await fetch(API_URL, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedItems),
+      });
+  
+      Alert.alert('✅ Added to Cart', `${item.name} has been added.`);
+      navigation.navigate('Cart');
+    } catch (error) {
+      console.error('Cart update error:', error);
+      Alert.alert('Failed to add to cart', error.message);
+    }
   };
+  
 
   const proceedToPayment = async () => {
     try {

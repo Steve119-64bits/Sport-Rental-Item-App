@@ -14,6 +14,8 @@ import ItemListScreen from './Screens/ItemListScreen';
 import BookingItemScreen from './Screens/BookingItemScreen';
 import UserProfileScreen from './Screens/UserProfileScreen';
 import EditProfileScreen from './Screens/EditProfileScreen';
+import PaymentScreen from './Screens/PaymentScreen';
+
 import 'react-native-gesture-handler';
 
 const Stack = createStackNavigator();
@@ -29,6 +31,8 @@ const App = () => (
       <Stack.Screen name="UserProfile" component={UserProfileScreen} />
       <Stack.Screen name="EditProfile" component={EditProfileScreen} />
       <Stack.Screen name="Cart" component={CartScreen} />
+      <Stack.Screen name="Payment" component={PaymentScreen} />
+
     </Stack.Navigator>
   </NavigationContainer>
 );
