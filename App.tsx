@@ -15,6 +15,9 @@ import BookingItemScreen from './Screens/BookingItemScreen';
 import UserProfileScreen from './Screens/UserProfileScreen';
 import EditProfileScreen from './Screens/EditProfileScreen';
 import PaymentScreen from './Screens/PaymentScreen';
+import CreditCardPaymentScreen from './Screens/CreditCardPaymentScreen';
+import EWalletPaymentScreen from './Screens/EWalletPaymentScreen';
+import OnlineBankingPaymentScreen from './Screens/OnlineBankingPaymentScreen';
 
 import 'react-native-gesture-handler';
 
@@ -34,6 +37,9 @@ const App = () => (
       <Stack.Screen name="About" component={AboutUsScreen} />
       <Stack.Screen name="Feedback" component={FeedBackScreen} />
       <Stack.Screen name="Payment" component={PaymentScreen} />
+      <Stack.Screen name="CreditCardPayment" component={CreditCardPaymentScreen} />
+      <Stack.Screen name="EWalletPayment" component={EWalletPaymentScreen} />
+      <Stack.Screen name="OnlineBankingPayment" component={OnlineBankingPaymentScreen} />
     </Stack.Navigator>
   </NavigationContainer>
 );
