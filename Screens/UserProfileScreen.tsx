@@ -6,10 +6,27 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export default function UserProfileScreen({ navigation }) {
   const [user, setUser] = useState(null);
 
- 
+ const handleLogout = () => {
+    Alert.alert(
+      'Confirm Logout',
+      'Are you sure you want to log out?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Yes', onPress: async () => {
+            await AsyncStorage.clear(); 
+            navigation.reset({
+              index:0,
+              routes:[{name:'Login'}]
+            });
+          }
+        }
+      ]
+    );
+  };
     const loadUser = async () => {
       try {
-        const userId = await AsyncStorage.getItem('userId');
+        const userId = await AsyncStorage.getItem('USER_ID');
         if (userId) {
           const res = await fetch(`http://10.0.2.2:5000/api/user/${userId}`);
           const data = await res.json();
@@ -39,37 +56,27 @@ export default function UserProfileScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Your Profile</Text>
+      <View style={styles.info}>
       <Text style={styles.label}>Username: {user.firstName} {user.lastName}</Text>
       <Text style={styles.label}>Phone: {user.phone}</Text>
       <Text style={styles.label}>Email: {user.email}</Text>
+      </View>
       <View style={styles.buttons}>
         <Button title="Edit Profile" onPress={() => navigation.navigate('EditProfile')} />
         <Button title="Logout" onPress={handleLogout} />
       </View>
+      
     </View>
   );
 }
 
-const handleLogout = () => {
-    Alert.alert(
-      'Confirm Logout',
-      'Are you sure you want to log out?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Yes', onPress: async () => {
-            await AsyncStorage.clear(); 
-            navigation.replace('Login'); 
-          }
-        }
-      ]
-    );
-  };
+
   
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 20 },
+  info: { flex: 1, justifyContent: 'center', alignItems: 'flex-start' },
   title: { fontSize: 22, marginBottom: 20 },
-  label: { fontSize: 16, marginBottom: 10 },
+  label: { fontSize: 16, marginBottom: 10 , fontWeight:'bold'},
   buttons: { marginTop: 20, gap: 10 }
 });
