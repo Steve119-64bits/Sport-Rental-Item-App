@@ -9,6 +9,12 @@ const App = () => {
         uri: 'https://reactnative.dev/img/tiny_logo.png',
     };
 
+
+const openMapURL = (latitude: any, longitude: any) => {
+  console.log('Open Map');
+  Linking.openURL(`https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`);
+}
+
 const openFacebookURL = () => {
     const fbURL : string = 'https://www.facebook.com/';
     Linking.openURL(fbURL);
@@ -52,6 +58,14 @@ const openYoutubeURL = () => {
           <Ionicons style={styles.facebook} name="logo-facebook" onPress = {openFacebookURL}/>
           <Ionicons style={styles.instagram} name="logo-instagram" onPress={openInstagramURL}/>
           <Ionicons style={styles.youtube} name="logo-youtube" onPress={openYoutubeURL}/>
+        </TouchableWithoutFeedback>
+      </View>
+      <View style={{ marginTop: 50, justifyContent: 'center' }}>
+        <TouchableWithoutFeedback onPress={() => { openMapURL(3.0402, 101.7944) }}>
+          <View style={styles.mapButton}>
+            <Ionicons name='navigate-circle' size={35} color="black" />
+            <Text style={{ fontSize: 25, color: 'black', fontWeight: 'bold' }}>Map</Text>
+          </View>
         </TouchableWithoutFeedback>
       </View>
     </View>
@@ -104,6 +118,16 @@ const styles = StyleSheet.create({
     youtube:{
       fontSize: 30,
       color: '#FF0000',
+    },
+    mapButton: {
+      height: 45,
+      width: 220,
+      borderRadius: 40,
+      backgroundColor: '#80FFFC',
+      alignItems: 'center',
+      alignSelf: 'center',
+      justifyContent: 'center',
+      flexDirection: 'row',
     },
 });
 
