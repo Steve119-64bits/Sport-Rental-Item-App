@@ -1,91 +1,55 @@
-import React, { useState, useEffect } from 'react';
-import { View, TextInput, Button, Text, StyleSheet, Alert } from 'react-native';
-import { getDBConnection, createFeedbacksTable, addFeedback, getAllFeedbacks } from '../backend/createFeedback';
+import React, { useState } from 'react';
+import { View, TextInput, Button, Alert, StyleSheet } from 'react-native';
+import firestore from '@react-native-firebase/firestore';
 
-export default function FeedbackForm() {
-    const [name, setName] = useState('');
-    const [phone, setPhone] = useState('');
-    const [email, setEmail] = useState('');
-    const [description, setDescription] = useState('');
+export default function FeedbackScreen() {
+  const [message, setMessage] = useState('');
 
-    useEffect(() => {
-        async function setupDB() {
-            const db = await getDBConnection();
-            await createFeedbacksTable(db);
-        }
-        setupDB();
-    }, []);
+  const submitFeedback = async () => {
+    if (!message.trim()) {
+      Alert.alert('Error', 'Please enter your feedback.');
+      return;
+    }
 
-    const handleSubmit = async () => {
-        if (!name || !phone || !email || !description) {
-            Alert.alert('All fields are required.');
-            return;
-        }
+    try {
+      await firestore()
+        .collection('feedback')
+        .add({
+          message,
+          createdAt: firestore.FieldValue.serverTimestamp(),
+        });
 
-        try {
-            const db = await getDBConnection();
-            await addFeedback(db, name, phone, email, description);
+      Alert.alert('Thank you!', 'Your feedback has been sent.');
+      setMessage('');
+    } catch (err) {
+      console.error('Firestore error:', err);
+      Alert.alert('Error', 'Could not send feedback. Please try again.');
+    }
+  };
 
-            //Fetch all the data from feedbacks table and log it to console bar
-            const feedbacks = await getAllFeedbacks(db);
-            console.log('--- All Feedbacks Stored in DB ---');
-            feedbacks.forEach((item, index) => {
-                console.log(`${index + 1}. Name: ${item.name}, Phone: ${item.phone}, Email: ${item.email}, Description: ${item.description}`);
-            });
-            console.log('----------------------------');
-
-            Alert.alert('Feedback submitted successfully!');
-
-            // Clear all form
-            setName('');
-            setPhone('');
-            setEmail('');
-            setDescription('');
-        } catch (error) {
-            console.error(error);
-            Alert.alert('Failed to submit feedback.');
-        }
-    };
-
-    return (
-        <View style={styles.container}>
-            <Text style={styles.header}>Send us your feedback!</Text>
-            <Text style={styles.header2}>Do you have any suggestion to improve your experience?</Text>
-            <Text style={styles.header2}>We would love to hear from you!</Text>
-            <TextInput placeholder="Name" value={name} onChangeText={setName} style={styles.input} />
-            <TextInput placeholder="Phone" value={phone} onChangeText={setPhone} keyboardType="phone-pad" style={styles.input} />
-            <TextInput placeholder="Email" value={email} onChangeText={setEmail} keyboardType="email-address" style={styles.input} />
-            <TextInput placeholder="Description" value={description} onChangeText={setDescription} multiline style={[styles.input, { height: 100 }]} />
-
-            <Button title="Submit Feedback" onPress={handleSubmit} />
-        </View>
-    );
+  return (
+    <View style={styles.container}>
+      <TextInput
+        style={styles.input}
+        placeholder="Type your feedback here…"
+        value={message}
+        onChangeText={setMessage}
+        multiline
+      />
+      <Button title="Submit Feedback" onPress={submitFeedback} />
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
-    header:{
-        fontSize: 30,
-        fontWeight: 'bold',
-        marginTop: 0,
-        marginBottom: 20,
-        textAlign: 'left',
-        color: '#333',
-    },
-    header2:{
-        fontSize: 15,
-        marginBottom: 20,
-        color: '#333',
-    },
-    container: {
-        padding: 20,
-        flex: 1,
-        justifyContent: 'center',
-    },
-    input: {
-        borderWidth: 1,
-        borderColor: '#999',
-        padding: 10,
-        marginBottom: 10,
-        borderRadius: 5,
-    },
+  container: { flex: 1, padding: 20 },
+  input: {
+    height: 120,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    marginBottom: 10,
+    padding: 10,
+    textAlignVertical: 'top',
+},
 });
+

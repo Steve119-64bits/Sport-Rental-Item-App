@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "411017330487",
+    "project_id": "fb-feedback-af68f",
+    "storage_bucket": "fb-feedback-af68f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:411017330487:android:60c499ccbaf489b74664b2",
+        "android_client_info": {
+          "package_name": "com.sportrentalapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCM75RwW1Y2mTL91jcm7PGuOOGJ2bNbdss"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
