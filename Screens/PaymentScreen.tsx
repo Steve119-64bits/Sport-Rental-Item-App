@@ -68,20 +68,25 @@ const PaymentScreen = ({ route, navigation }) => {
           <Text style={styles.detailLabel}>Total Price: <Text style={styles.total}>RM{totalPrice}</Text></Text>
         </View>
 
-        <Text style={styles.paymentLabel}>Select Payment Method:</Text>
-        <DropDownPicker
-          open={open} // Controlled open state
-          value={paymentMethod}
-          items={[
-            { label: 'Online Banking', value: 'Online Banking' },
-            { label: 'TNG eWallet', value: 'TNG eWallet' },
-            { label: 'Credit Card', value: 'Credit Card' },
-          ]}
-          setOpen={setOpen} // Allow dropdown to open/close
-          setValue={setPaymentMethod} // Set selected payment method
-          style={styles.picker}
-          placeholder="Select payment method"
-        />
+
+          <Text style={styles.paymentLabel}>Select Payment Method:</Text>
+          <View style={styles.dropdownWrapper}>
+          <DropDownPicker
+            open={open}
+            value={paymentMethod}
+            items={[
+              { label: 'Online Banking', value: 'Online Banking' },
+              { label: 'TNG eWallet', value: 'TNG eWallet' },
+              { label: 'Credit Card', value: 'Credit Card' },
+            ]}
+            setOpen={setOpen}
+            setValue={setPaymentMethod}
+            setItems={() => {}}
+            placeholder="Select payment method"
+            dropDownContainerStyle={styles.dropDownContainer}
+            zIndex={1}
+          />
+        </View>
 
         <TouchableOpacity style={styles.confirmButton} onPress={handleConfirmPayment}>
           <Text style={styles.confirmText}>Confirm Payment</Text>
@@ -101,9 +106,20 @@ const styles = StyleSheet.create({
   detailLabel: { fontSize: 14, fontWeight: '600', marginTop: 5 },
   detailText: { fontSize: 14, color: '#333' },
   total: { fontSize: 16, fontWeight: 'bold', color: '#28a745', marginTop: 5 },
-
   paymentLabel: { fontSize: 16, fontWeight: 'bold', marginTop: 20 },
-  picker: { height: 40, width: '100%', borderRadius: 10, marginTop: 10 },
+
+  dropdownWrapper: {
+    width: '100%', 
+    borderRadius: 10, 
+    marginTop: 10,
+    zIndex: 1,
+    position: 'relative',
+  },
+
+  dropDownContainer: {
+    zIndex: 1,
+    borderColor: '#ccc',
+  },
 
   confirmButton: {
     backgroundColor: '#28a745',
