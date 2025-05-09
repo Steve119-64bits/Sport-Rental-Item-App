@@ -37,7 +37,7 @@ const HomeScreen = ({ navigation }) => {
     setMenuVisible(!menuVisible);
   };
 
-  const branches = ['Branch 1', 'Branch 2', 'Branch 3', 'Branch 4'];
+  const branches = ['Semenyih', 'Kuching', 'Kajang', 'Ipoh'];
 
   const handleBranchSelect = (branch) => {
     setSelectedBranch(branch);
