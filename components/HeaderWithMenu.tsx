@@ -5,7 +5,7 @@ import * as ImagePicker from 'react-native-image-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect } from 'react';
 
-const branches = ['Branch 1', 'Branch 2', 'Branch 3', 'Branch 4'];
+ const branches = ['Semenyih', 'Kuching', 'Kajang', 'Ipoh'];
 
 const HeaderWithMenu = ({ navigation }) => {
   const [menuVisible, setMenuVisible] = useState(false);
