@@ -5,7 +5,6 @@ import {
 } from 'react-native';
 import CheckBox from '@react-native-community/checkbox';
 import imageMap from '../imageMap';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getUserId } from '../utils/getUserId';
 
 interface CartItem {
@@ -127,8 +126,8 @@ export default function CartScreen ( {navigation}:any ) {
               });
           },
         },
-      ],
-    );
+      ],
+    );
   };
   
 
