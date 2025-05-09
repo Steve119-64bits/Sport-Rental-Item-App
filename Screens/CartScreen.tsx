@@ -84,12 +84,12 @@ export default function CartScreen ( {navigation}:any ) {
   };
 
   const handleCheckout = () => {
-    const selected = items.filter((i) => i.selected);
+    const selected = items.filter(i => i.selected);
     if (selected.length === 0) {
       Alert.alert('No items selected');
       return;
     }
-
+  
     Alert.alert(
       'Confirm Checkout',
       `Are you sure you want to checkout ${selected.length} item(s)?`,
@@ -98,7 +98,9 @@ export default function CartScreen ( {navigation}:any ) {
         {
           text: 'Yes',
           onPress: () => {
-            const remaining = items.filter((i) => !i.selected);
+            const remaining = items.filter(i => !i.selected);
+  
+            // 1) Update server/cart
             fetch(apiUrl, {
               method: 'PUT',
               headers: { 'Content-Type': 'application/json' },
@@ -106,21 +108,29 @@ export default function CartScreen ( {navigation}:any ) {
             })
               .then(() => {
                 setItems(remaining);
-                Alert.alert(
-                  '✅ Checkout complete!',
-                  'Proceeding to payment...',
-                );
-                navigation.navigate('Payment');
+  
+                // 2) Navigate with all the params PaymentScreen needs
+                navigation.navigate('Payment', {
+                  item: selected[0],
+                  // Make sure you have these in scope (or pull them in from route/context)
+
+                  // If you have real pickers for date/time, use those values here:
+                  date: new Date().toISOString(),
+                  time: new Date().toISOString(),
+                  duration: selected[0].duration ?? 1,
+                  totalPrice: parseFloat(getTotal()),
+                });
               })
-              .catch((err) => {
+              .catch(err => {
                 console.error('Checkout error:', err);
                 Alert.alert('Error', 'Something went wrong.');
               });
           },
         },
-      ],
-    );
+      ],
+    );
   };
+  
 
   /* ---------- Render ---------- */
   const renderItem = ({ item }: { item: CartItem }) => (
