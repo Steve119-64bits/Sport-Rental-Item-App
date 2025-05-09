@@ -24,7 +24,7 @@ const StackNavigator = () => (
     <Stack.Screen name="BookingItem" component={BookingItemScreen} />
     <Stack.Screen name="About" component={AboutUsScreen} />
     <Stack.Screen name="Feedback" component={FeedbackScreen} />
-    <Stack.Screen name="Cart" component={CartScreen} /> */
+    <Stack.Screen name="Cart" component={CartScreen} />
     <Stack.Screen name="Payment" component={PaymentScreen} />
     <Stack.Screen name="CreditCardPayment" component={CreditCardPaymentScreen} />
     <Stack.Screen name="EWalletPayment" component={EWalletPaymentScreen} />

@@ -5,6 +5,9 @@ from werkzeug.security import generate_password_hash, check_password_hash   # Fo
 
 app = Flask(__name__)
 CORS(app)  # Allows requests from React Native
+@app.route('/ping', methods=['GET'])
+def ping():
+    return 'pong', 200
 
 DB_PATH = 'items.sqlite'
 
@@ -112,13 +115,18 @@ def update_user(user_id):
 
 @app.route('/api/cart/<int:user_id>', methods=['GET'])
 def get_cart(user_id):
-    # Check if the user exists before retrieving the cart
     row = query_db("SELECT id FROM users WHERE id = ?", [user_id], one=True)
     if not row:
-        print(f"User with ID {user_id} not found.")  # Debugging output
-        return jsonify({'error': 'User not found'}), 404  # Return if user does not exist
+        return jsonify({'error': 'User not found'}), 404
 
-    rows = query_db("SELECT id, name, price, quantity, selected, image FROM cart_items WHERE user_id = ?", [user_id])
+    # NEW  ➜  return [] if user exists but has no items
+    if query_db("SELECT COUNT(*) FROM cart_items WHERE user_id = ?", [user_id], one=True)[0] == 0:
+        return jsonify([])
+
+    rows = query_db(
+        "SELECT id, name, price, quantity, selected, image FROM cart_items WHERE user_id = ?",
+        [user_id]
+        )
     items = [
         {
             'id': r[0],
@@ -127,9 +135,11 @@ def get_cart(user_id):
             'quantity': r[3],
             'selected': bool(r[4]),
             'image': r[5]
-        } for r in rows
+        }
+        for r in rows
     ]
-    return jsonify(items)
+    return jsonify(items), 200
+
 
 
 @app.route('/api/cart/<int:user_id>', methods=['PUT'])

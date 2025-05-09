@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet } from 'react-native';
 
-const EWalletPaymentScreen = ({ navigation }) => {
+const EWalletPaymentScreen = ({ route, navigation }) => {
   const [walletId, setWalletId] = useState('');
   const [pin, setPin] = useState('');
 

@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 
-const OnlineBankingPaymentScreen = ({ navigation }) => {
+const OnlineBankingPaymentScreen = ({ route, navigation }) => {
   const [open, setOpen] = useState(false);
   const [selectedBank, setSelectedBank] = useState(null);
   const [banks] = useState([

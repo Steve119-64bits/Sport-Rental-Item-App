@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet } from 'react-native';
 
-const CreditCardPaymentScreen = ({ navigation }) => {
+const CreditCardPaymentScreen = ({ route, navigation }) => {
   const [cardNumber, setCardNumber] = useState('');
   const [expiry, setExpiry] = useState('');
   const [cvv, setCvv] = useState('');
   const [name, setName] = useState('');
-
+  
   const validateAndPay = () => {
     const cardRegex = /^\d{16}$/;
     const expiryRegex = /^(0[1-9]|1[0-2])\/\d{2}$/;
